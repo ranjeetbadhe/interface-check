@@ -1,0 +1,18 @@
+#!/bin/bash
+
+for net_dev in find /sys/class/net/ -type l; do
+# only need filename without path
+net=basename $net_dev
+speed=ethtool $net | grep Speed | cut -d ':' -f 2 | tr -d " "
+link=ethtool $net | grep "Link detected" | cut -d ':' -f 2 | tr -d " "
+# print result
+if [[ "$link" != "yes" ]]; then
+echo "interface $net has no link detected"
+else
+if [[ "$speed" == "" ]]; then
+echo "interface $net has link detected but no speed (virtual ?)"
+else
+echo "interface $net has link detected with speed $speed"
+fi
+fi
+done
